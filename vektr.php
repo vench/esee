@@ -1,46 +1,12 @@
 <?php
 
+namespace esee;
 
-function view($points) {
-	$l = sizeof($points[0]);
-	for($y = 0; $y < sizeof($points); $y ++) {
-		for($x = 0; $x < $l; $x ++) {	 
-			 echo $points[$y][$x] ? '#' : '.';		 	
-		} 
-		echo "\n";
-	}	
-}
+require_once './lib.php';
+ 
 
-function view2($points) {
-	$xMin = 999999;
-	$yMin = 999999;	
-	$xMax = 0;
-	$yMax = 0;
 
-	//print_r($points);
-	
-	foreach($points as $y=>$point) {
-		$yMin = min($yMin, $y);
-		$yMax = max($yMax, $y);
-		foreach($point as $x =>$p) {
-			$xMin = min($xMin, $x);
-			$xMax = max($xMax, $x);
-		}
-	}
-//var_dump($xMin, $xMax);
-	for($y = 0; $y <= ($yMax - $yMin); $y ++){
-		for($x = 0; $x <= ($xMax - $xMin); $x ++){
-			echo isset($points[$y + $yMin][$x + $xMin]) ?  '#' : '.';
-		}
 
-		echo "\n";
-	}
-
-}
-
-function getValue(&$points, $x, $y) {
-	return isset($points[$y][$x]) ? $points[$y][$x] : 0; 
-}
 
 function inChain($x, $y, $x1, $y1, &$points) {
 
@@ -83,34 +49,7 @@ function makeChain(&$points, $x, $y, &$chain = null) {
 
 	if(isset($see[$y][$x])) {
 		return $chain;
-	}/*
-	if(getValue($points,$x,$y) == 1 && ( 
-		getValue($points,$x + 1,$y) == 0 ||
-		getValue($points,$x,$y + 1) == 0 ||
-		getValue($points,$x - 1,$y) == 0 ||
-		getValue($points,$x,$y - 1) == 0 ||
-		getValue($points,$x + 1,$y + 1) == 0 ||
-		getValue($points,$x - 1,$y - 1) == 0 ||
-		getValue($points,$x - 1,$y + 1) == 0 ||
-		getValue($points,$x + 1,$y - 1) == 0
-	)) {
-
-		if(is_null($chain)) {
-			$chain = [];
-		}
-		$chain[$y][$x] = 1;
-
-		
-		
-		makeChain($points, $x + 1, $y, $chain);	
-		makeChain($points, $x - 1, $y, $chain);
-		makeChain($points, $x, $y + 1, $chain);
-		makeChain($points, $x, $y - 1, $chain);
-		makeChain($points, $x + 1, $y + 1, $chain);
-		makeChain($points, $x - 1, $y - 1, $chain);
-		makeChain($points, $x + 1, $y - 1, $chain);
-		makeChain($points, $x - 1, $y + 1, $chain);
-	}*/
+	} 
 
 
 	if(getValue($points,$x,$y) == 1 && ( 
@@ -230,9 +169,7 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 			$chain = [];
 		}
 		$chain[$y][$x] = 1;
-		
-
-		//$points = [];
+		 
 		$cx = $x;
 		$cy = $y;
 		$lx = $x;
@@ -249,7 +186,7 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 				$lx = $cx; $ly = $cy;
 				$see[$cy-1][$cx] = 1;
 				$cy = $cy - 1;
-				$chain[$cy][$cx] = 1; echo 'n ';
+				$chain[$cy][$cx] = 1; //echo 'n ';
 				$w = 7; 
 				 
 				continue;
@@ -260,7 +197,7 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 				$see[$cy-1][$cx+1] = 1;
 				$cy = $cy - 1;
 				$cx = $cx + 1;
-				$chain[$cy][$cx] = 1; echo 'n&o '; 
+				$chain[$cy][$cx] = 1; //echo 'n&o '; 
 				$w = 0;
 				 
 				continue;
@@ -269,7 +206,7 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 			if($w < 3 && $hasSee($cx+1,$cy) && allowPoint($points,$cx+1,$cy) ) {
 				$see[$cy][$cx+1] = 1;
 				$cx = $cx + 1;
-				$chain[$cy][$cx] = 1; echo 'o ';
+				$chain[$cy][$cx] = 1;// echo 'o ';
 				$w = 1;
 				$lx = $cx; $ly = $cy;
 				continue;
@@ -280,7 +217,7 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 				$see[$cy+1][$cx+1] = 1;
 				$cx = $cx + 1;
 				$cy = $cy + 1;	
-				$chain[$cy][$cx] = 1; echo 's&o ';
+				$chain[$cy][$cx] = 1; //echo 's&o ';
 				$w = 2;
 				 		
 				continue;
@@ -290,7 +227,7 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 				$lx = $cx; $ly = $cy;
 				$see[$cy+1][$cx] = 1;
 				$cy = $cy + 1;
-				$chain[$cy][$cx] = 1; echo 's ';
+				$chain[$cy][$cx] = 1; //echo 's ';
 				$w = 3;
 				
 				continue;
@@ -301,7 +238,7 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 				$see[$cy+1][$cx-1] = 1;
 				$cy = $cy + 1;
 				$cx = $cx - 1;
-				$chain[$cy][$cx] = 1; echo 's&w ';
+				$chain[$cy][$cx] = 1; //echo 's&w ';
 				$w = 4;
 					
 				continue;
@@ -311,7 +248,7 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 				$lx = $cx; $ly = $cy;
 				$see[$cy][$cx-1] = 1;
 				$cx = $cx - 1;
-				$chain[$cy][$cx] = 1; echo 'w ';
+				$chain[$cy][$cx] = 1; //echo 'w ';
 				$w =5;
 				
 				continue;
@@ -322,7 +259,7 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 				$see[$cy-1][$cx-1] = 1;
 				$cx = $cx - 1;
 				$cy = $cy - 1;
-				$chain[$cy][$cx] = 1; echo 'n&w ';
+				$chain[$cy][$cx] = 1; //echo 'n&w ';
 				$w = 6;
 				
 				continue;
@@ -340,15 +277,7 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 				$cy = $ly;
 				continue;
 			}
-
-
-			//new 
-			/*
-				if(isset($see[$ly][$lx])) {
-					unset($see[$ly][$lx]); continue;
-				}
-			*/
-				//end new
+ 
 			break;
 		}
 echo "\n";
