@@ -208,6 +208,19 @@ function allowPoint(&$points, $x, $y) {
 
 function makeChain2(&$points, $x, $y, &$chain = null) { 
 	static $see = [];
+	
+	$re  = 0;
+	$hasSee = function($sx,$sy) use(&$chain, &$see, &$re){
+		if(!isset($see[$sy][$sx])) {
+			return true;
+		}
+		
+		if($re < 1 && isset($chain[$sy][$sx])) {
+			$re ++;
+			return true;
+		}
+		return false;
+	};
 
 	if(isset($see[$y][$x])) {
 		return $chain;
@@ -222,85 +235,120 @@ function makeChain2(&$points, $x, $y, &$chain = null) {
 		//$points = [];
 		$cx = $x;
 		$cy = $y;
+		$lx = $x;
+		$ly = $y;
 		$n = 0;	
-		$w = 0;
+		$w = 0; 
+		$r = 0;
 		while(true) { 
 		 
 			if($n ++ > 0 && $x == $cx && $y == $cy) break;
-		//$see = [];
+		
 			//n 
-			if($w < 1 && !isset($see[$cy-1][$cx]) && allowPoint($points,$cx,$cy-1) ) {
+			if($w < 1 && $hasSee($cx,$cy-1) && allowPoint($points,$cx,$cy-1) ) {
+				$lx = $cx; $ly = $cy;
 				$see[$cy-1][$cx] = 1;
 				$cy = $cy - 1;
 				$chain[$cy][$cx] = 1; echo 'n ';
 				$w = 7; 
+				 
 				continue;
 			}
 			//n&o 
-			if($w < 2 && !isset($see[$cy-1][$cx+1]) && allowPoint($points,$cx+1,$cy-1) ) {
+			if($w < 2 && $hasSee($cx+1,$cy-1) && allowPoint($points,$cx+1,$cy-1) ) {
+				$lx = $cx; $ly = $cy;
 				$see[$cy-1][$cx+1] = 1;
 				$cy = $cy - 1;
 				$cx = $cx + 1;
 				$chain[$cy][$cx] = 1; echo 'n&o '; 
 				$w = 0;
+				 
 				continue;
 			}
 			//o
-			if($w < 3 && !isset($see[$cy][$cx+1]) && allowPoint($points,$cx+1,$cy) ) {
+			if($w < 3 && $hasSee($cx+1,$cy) && allowPoint($points,$cx+1,$cy) ) {
 				$see[$cy][$cx+1] = 1;
 				$cx = $cx + 1;
 				$chain[$cy][$cx] = 1; echo 'o ';
 				$w = 1;
+				$lx = $cx; $ly = $cy;
 				continue;
 			}
 			//s&o
-			if($w< 4&& !isset($see[$cy+1][$cx+1]) && allowPoint($points,$cx+1,$cy+1) ) {
+			if($w< 4&& $hasSee($cx+1,$cy+1) && allowPoint($points,$cx+1,$cy+1) ) {
+				$lx = $cx; $ly = $cy;
 				$see[$cy+1][$cx+1] = 1;
 				$cx = $cx + 1;
 				$cy = $cy + 1;	
 				$chain[$cy][$cx] = 1; echo 's&o ';
-				$w = 2;	
+				$w = 2;
+				 		
 				continue;
 			}
 			//s 
-			if($w <5 && !isset($see[$cy+1][$cx]) && allowPoint($points,$cx,$cy+1) ) {
+			if($w <5 && $hasSee($cx,$cy+1) && allowPoint($points,$cx,$cy+1) ) {
+				$lx = $cx; $ly = $cy;
 				$see[$cy+1][$cx] = 1;
 				$cy = $cy + 1;
 				$chain[$cy][$cx] = 1; echo 's ';
 				$w = 3;
+				
 				continue;
 			}
 			//s&w 
-			if($w <6 && !isset($see[$cy+1][$cx-1]) && allowPoint($points,$cx-1,$cy+1) ) {
+			if($w <6 && $hasSee($cx-1,$cy+1) && allowPoint($points,$cx-1,$cy+1) ) {
+				$lx = $cx; $ly = $cy;
 				$see[$cy+1][$cx-1] = 1;
 				$cy = $cy + 1;
 				$cx = $cx - 1;
 				$chain[$cy][$cx] = 1; echo 's&w ';
 				$w = 4;
+					
 				continue;
 			}
 			//w
-			if($w<7 && !isset($see[$cy][$cx-1]) && allowPoint($points,$cx-1,$cy) ) {
+			if($w<7 && $hasSee($cx-1,$cy) && allowPoint($points,$cx-1,$cy) ) {
+				$lx = $cx; $ly = $cy;
 				$see[$cy][$cx-1] = 1;
 				$cx = $cx - 1;
 				$chain[$cy][$cx] = 1; echo 'w ';
 				$w =5;
+				
 				continue;
 			}
 			//n&w
-			if($w <8 && !isset($see[$cy-1][$cx-1]) && allowPoint($points,$cx-1,$cy-1) ) {
+			if($w <8 && $hasSee($cx-1,$cy-1) && allowPoint($points,$cx-1,$cy-1) ) {
+				$lx = $cx; $ly = $cy;
 				$see[$cy-1][$cx-1] = 1;
 				$cx = $cx - 1;
 				$cy = $cy - 1;
 				$chain[$cy][$cx] = 1; echo 'n&w ';
 				$w = 6;
+				
 				continue;
 			}
 			echo "\n";
 			if($w > 0) {
 				$w = 0;
+
+				
 				continue;
 			}
+			//step last	
+			if($cx != $lx || $cy != $ly) { echo 'change-last';
+				$cx = $lx;
+				$cy = $ly;
+				continue;
+			}
+
+
+			//new 
+			/*
+				if(isset($see[$ly][$lx])) {
+					unset($see[$ly][$lx]); continue;
+				}
+			*/
+				//end new
 			break;
 		}
 echo "\n";
@@ -314,7 +362,7 @@ echo "\n";
 // end functions
 
 
-
+/**/
 $fileName = "x1.png";
 
 $img = imagecreatefrompng($fileName);
@@ -363,7 +411,29 @@ $points = [
 	[0,1,1,1,1,1,0],
 	[0,0,0,1,0,0,0],
 ];
-*/
+
+
+*//*
+$points = [
+	[0,0,0,1,0,0,0],
+	[0,0,0,1,0,0,0],
+	[0,0,0,1,0,0,0],
+	[0,1,1,1,1,1,0],
+	[0,1,1,0,1,1,0],
+	[1,1,0,0,0,1,1],
+	[0,1,1,0,1,1,0],
+	[0,1,1,1,1,1,0],
+	[0,0,0,1,0,0,0],
+];
+$points = [
+	[0,0,0,1,0,0,0,0],
+	[0,1,1,1,1,1,0,0],
+	[0,1,1,0,1,1,0,0],
+	[1,1,0,0,0,1,1,1],
+	[0,1,1,0,1,1,0,0],
+	[0,1,1,1,1,1,0,0],
+	[0,0,0,1,0,0,0,0],
+];*/
 
 
 echo "\n";
