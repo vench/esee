@@ -23,9 +23,17 @@ class ChainBuilder {
          */
 	private $image;
  
+        /**
+         *
+         * @var int
+         */
  	private $diff;
 
-
+        /**
+         * 
+         * @param \esee\Image $image
+         * @param int $diff
+         */
 	public function __construct(Image $image, $diff) {
 		$this->image = $image;
 		$this->diff = $diff;
@@ -39,10 +47,22 @@ class ChainBuilder {
 			1 : 0;  
 	}
 
+        /**
+         * 
+         * @param type $x
+         * @param type $y
+         * @return boolean
+         */
 	public function hasSee($x, $y)    { 
 		return isset(self::$see[$y][$x]);
 	}
 
+        /**
+         * 
+         * @param type $x
+         * @param type $y
+         * @return boolean
+         */
 	function allowPoint($x, $y) {
 		return $this->getValue($x,$y) == 1;
 	}
@@ -54,13 +74,16 @@ class ChainBuilder {
 		if(isset(self::$see[$y][$x])) {
 			return $chain;
 		}
+                
 		if($this->allowPoint($x,$y)) {
 			if(is_null($chain)) {
 				 $chain = new Chain(); 
 			}
 			$chain->addPoint($x, $y);			 
 			self::$see[$y][$x] = 1;
-			
+			if(sizeof($chain->op) > 250) {
+                            return $chain;
+                        }
 			$this->makeChain($x + 1, $y, $chain);
 			$this->makeChain($x, $y + 1, $chain);
 			$this->makeChain($x - 1, $y, $chain);

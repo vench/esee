@@ -3,20 +3,15 @@
 
 namespace esee;
 
-spl_autoload_register(function($className){  
-    if(class_exists($className)) {
-        return true;
-    }
-    $fileName = str_replace('\\', '/', $className) . '.php';
-    include_once $fileName;
-});
+require_once 'esee/App.php';
+App::autoload();
 
-$image = new Image('../x2.png');
+$image = new Image('../x1.jpg');
 $image->open();
 
 $diff = 16777215 / 2;
  
-
+$provider = new provider\ProviderFile('data.txt');
 $chainBuilder = new ChainBuilder($image, $diff);
 $ar = [];
  
@@ -29,7 +24,13 @@ $ar = [];
 				continue;
 			} 
 			Helper::view2	($c);	
-                        print_r( Helper::avg	($c) );     
+                        list($ax, $ay) = Helper::avg	($c) ; 
+                        $char = $provider->findByXY($ax, $ay);
+                        if(!is_null($char)) {
+                            echo "Find: {$char->char}\n"; exit();
+                        } else {
+                            echo "No find: {$ax}, {$ay}\n";
+                        }
 			array_push($ar, $c); 
 		 }
  

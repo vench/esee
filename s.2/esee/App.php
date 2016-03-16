@@ -14,5 +14,21 @@ namespace esee;
  * @author vench
  */
 class App {
-    //put your code here
+
+    /**
+     * 
+     * @param string $dir
+     */
+    public static function autoload($dir = null) {
+        if(is_null($dir)) {
+            $dir = dirname(__FILE__) . '/../';
+        }
+        spl_autoload_register(function($className) use (&$dir){  
+            if(class_exists($className)) {
+                return true;
+            }
+            $fileName = str_replace('\\', '/', $className) . '.php';
+            include_once $dir.$fileName;
+        });
+    }
 }
