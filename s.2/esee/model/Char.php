@@ -17,13 +17,13 @@ class Char {
     
     /**
      *
-     * @var float 
+     * @var double 
      */
     public $x;
     
     /**
      *
-     * @var float
+     * @var double
      */
     public $y;
     
@@ -36,8 +36,8 @@ class Char {
     /**
      * 
      * @param string $char
-     * @param float $x
-     * @param float $y
+     * @param double $x
+     * @param double $y
      */
     public function init($char, $x, $y) {
         $this->char = $char;
@@ -47,11 +47,15 @@ class Char {
     
     /**
      * 
-     * @param float $x
-     * @param float $y
+     * @param double $x
+     * @param double $y
      * @return boolean
      */
     public function equalsXY($x, $y) {
+        if($this->x == 3.9508196721311) {
+            var_dump((float)$x, (float)$y, (float)$this->x, (float)$this->y, ((float)$this->x) -  ((float)$x),  ((float)$this->y) -  ((float)$y));
+            echo $x . ' ' . $y . "\n";
+        }
         return $this->x == $x && $this->y == $y;
     }
 }

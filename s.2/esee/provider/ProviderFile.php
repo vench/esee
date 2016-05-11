@@ -51,17 +51,17 @@ class ProviderFile extends ProviderArray {
                 $exp = explode(':', $strChar);
                 if(sizeof($exp) != 3) {
                     continue;
-                }  print_r($exp);
+                }  
                 list($char, $fx, $fy) = $exp;
                 $c = new \esee\model\Char();
-                $c->init($char, $fx, $fy);
+                $c->init($char, trim($fx), trim($fy));
                 parent::addChar($c);
                 if($c->equalsXY($x, $y)) {
                     $result = $c;
                     break;
                 }
             }
-        }  exit();
+        } 
         return $result;
     }
     
