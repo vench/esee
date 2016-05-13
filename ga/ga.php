@@ -5,8 +5,8 @@ require dirname(__FILE__) . '/../s.1/lib.php';
 require 'func.php';
 
 
-$fileName = "t.png";
-//$fileName = "cap/so.png";
+$fileName = "x1.png";
+$fileName = "cap/55.png";
 
 $img =imagecreatefrompng($fileName);;// imagecreatefromjpeg($fileName);//
 $width = imagesx($img);
@@ -68,6 +68,7 @@ $ar = [];
  
 $fileData = [];
 $result = [];
+$lastX = '';
 foreach($points as $y =>$point) {
 	foreach($point as $x => $v) {
 		if($v == 1){
@@ -117,9 +118,14 @@ foreach($points as $y =>$point) {
 					}
 				}
 				echo $diffX . ' - ' . $search[1] . "\n";
-				$result[$c->minX . '_' . $c->minY] = $search[1];
+				$result[$c->minX ] = $search[1];
 				 
 				Helper::view2($c);
+				$min = 200;
+				if($c->minX - $lastX > $min) {
+					$result[$c->minX + ($c->minY / 2) + 1] = ' ';
+				}
+				$lastX = $c->minX ;
 				
 			}
 			//array_push($ar, $c); 		

@@ -58,6 +58,7 @@ class ChainBuilder {
 	* @retrn int
 	*/
 	public  function getValue($x, $y) {
+		
 		return isset($this->points[$y][$x]) ? $this->points[$y][$x] : 0; 
 	}
 
@@ -105,7 +106,8 @@ class ChainBuilder {
 			$n = 0;	
 			$w = 0; 
 			 
-			while(true) { 		 
+			while(true) { 	
+				$this->chain->path[] = $w;	 
 				if($n ++ > 0 && $x == $cx && $y == $cy) {
 					break;
 				}
@@ -115,6 +117,7 @@ class ChainBuilder {
 					self::$see[$cy][$cx] = 1;				
 					$this->chain->addPoint($cx, $cy); 
 					$w = 7;  	
+				
 					continue;
 				}
 				//n&o 
@@ -190,6 +193,12 @@ class ChainBuilder {
 
 		return $this->chain;
 	}
+
+	public function reset( $points) {
+		$this->chain = null;
+		$this->points = $points;
+		self::$see = [];
+	}
 }
 
 /**
@@ -210,6 +219,8 @@ class Chain {
 	* @var array optimize points [[x,y], [...]]
 	*/
 	public $op = [];
+
+	public $path = [];
 
 	/**
 	* @param int $x

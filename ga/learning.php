@@ -6,12 +6,21 @@ require 'func.php';
  
 //'/sites/club/club.tehnosila.ru/vendor/imagine/imagine/tests/Imagine/Fixtures/font/'; //
 $fontDir = '/usr/share/fonts/truetype/freefont/'; //'/usr/share/fonts/truetype/tlwg/'; //
-$fonts = array_filter (scandir($fontDir), function($file){ return $file != '.' && $file != '..';}); 
+$fontDir = './fonts/';
 
+
+$fonts = array_filter (scandir($fontDir), function($file) use(&$fontDir) { 
+	return $file != '.' && $file != '..' && strpos($file, '.ttf') !== false;}); 
+ 
  
 
   
-$chars = range('a', 'z') + range('A', 'Z') + range('0', '9') + range('а', 'я')  + range('А', 'Я');
+//$chars = range('a', 'z') + range('A', 'Z') + range('0', '9') + range('а', 'я')  + range('А', 'Я');
+$chars = array_merge(range('a', 'z'), range('A', 'Z'), [0,1,2,3,4,5,6,7,8,9]);
+ /*
+foreach (range(chr(192),chr(255)) as $v) 
+  $chars[] = iconv('CP1251','UTF-8',$v); 
+ */
 
 $hashs = [];
 
@@ -22,7 +31,7 @@ foreach($fonts as $font) {
 			$im = imagecreatetruecolor(40, 40);	
 			$white = imagecolorallocate($im, 0xFF, 0xFF, 0xFF);
 			$black = imagecolorallocate($im, 0x00, 0x00, 0x00); 
-			imagefill($im, 0, 0, $white);
+			imagefill($im, 0, 0, $white);  //echo $fontDir .  $font . "\n"; exit();
 			imagefttext($im, $s, 0, 5, 30, $black, $fontDir .  $font, $char);
 			
 			$hash = getHash($im); 
