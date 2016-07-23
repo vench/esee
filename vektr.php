@@ -1,6 +1,8 @@
 <?php
 
 
+namespace esee;
+
 function view($points) {
 	$l = sizeof($points[0]);
 	for($y = 0; $y < sizeof($points); $y ++) {
@@ -315,14 +317,88 @@ echo "\n";
 
 
 
-$fileName = "x1.png";
+abstract class Reader {
+	protected $fileName;	 
+	protected $pointsHash = [];
+	protected $width;
+	protected $height;
+	
+	public function __construct($fileName = null) {
+		$this->fileName= $fileName;
+	}
 
-$img = imagecreatefrompng($fileName);
+	abstract public function open($fileName = null);
+	abstract public function close();
+	abstract protected function getImg();
+
+	public function getWidth() { 
+		if(is_null($this->width)) {
+			$this->width = imagesx($this->getImg());
+		}
+		return $this->width;
+	}
+
+	public function gwtHeight() { 
+		if(is_null($this->height)) {
+			$this->height = imagesx($this->getImg());
+		}
+		return $this->height;
+	}
+
+	public function getColorAt($x, $y) {
+		$k = $x.'-'.$y;
+		if(!isset($this->pointsHash[$k])) {
+			$this->pointsHash[$k] = imagecolorat($this->getImg(), $x, $y);
+		}
+		return $this->pointsHash[$k];
+	}		
+} 
+
+
+class Chain {
+	public $xMax;
+	public $xMin;
+	public $yMax;
+	public $yMin;
+	public $points = [];
+
+	public function setPoint($x, $y) {
+		$this->points[$y][$x] = 1;
+		if(is_null($this->xMax) || $this->xMax < $x) {
+			$this->xMax = $x;
+		}
+		if(is_null($this->xMin) || $this->xMin > $x) {
+			$this->xMin = $x;
+		}
+		if(is_null($this->yMax) || $this->yMax < $y) {
+			$this->yMax = $y;
+		}
+		if(is_null($this->yMin) || $this->yMin > $y) {
+			$this->yMin = $y;
+		}
+	}
+	
+}
+
+$fileName = "x1.png";
+$fileName = "x.jpg";
+
+$img = imagecreatefromjpeg($fileName);
 $width = imagesx($img);
 $height = imagesy($img);
 
 echo $width . ' - ' . $height;
 echo "\n";
+
+//
+   $matrix = array( 
+        array( 0, 0, 0 ), 
+        array( 0, 1, 0 ), 
+        array( 0, 0, 0 ) 
+      ); 
+    //  imageconvolution($img, $matrix, 16, 2);
+
+//
 
 $diff = 16777215 / 2;
 $points = [];
