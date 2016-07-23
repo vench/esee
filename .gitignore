@@ -1,0 +1,7 @@
+# Temporary files for editors #
+###############################
+
+*~
+data/*
+fonts/*
+*fonts/*
