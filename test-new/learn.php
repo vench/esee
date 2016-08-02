@@ -1,13 +1,13 @@
 <?php
 
 
-define('VIEW_DEBAG', !true);
+define('VIEW_DEBAG', true);
 
 
 require './lib.php';
 
-$dirFiles = '/home/vench/dev/see/test-new/sq/'; ////circl/';
-$idFetch = OBJ_ID_SQ;
+$dirFiles = '/home/vench/dev/see/test-new/B/'; ////circl/';
+$idFetch = 4;
 
 $sacn = scandir($dirFiles);
 
