@@ -12,10 +12,18 @@ if (!defined('VIEW_DEBAG')) {
     define('VIEW_DEBAG', true);
 }
 
-define('DB_STR_CONN', 'mysql:host=localhost;dbname=testdb');
-define('DB_USER', 'root');
-define('DB_PASSWORD', 'admin');
 
+if (!defined('DB_STR_CONN')) {
+    define('DB_STR_CONN', 'mysql:host=localhost;dbname=testdb');
+}
+
+if (!defined('DB_USER')) {
+    define('DB_USER', 'root');
+}  
+
+if (!defined('DB_PASSWORD')) {
+    define('DB_PASSWORD', 'admin');
+}
 /**
  * 
  * @param type $rgb
@@ -133,7 +141,9 @@ function getDirectionPath($filename) {
 function getDb() {
     static $dbh = null;
     if (is_null($dbh)) {
-        $dbh = new PDO(DB_STR_CONN, DB_USER, DB_PASSWORD);
+        $dbh = new \PDO(DB_STR_CONN, DB_USER, DB_PASSWORD, [
+            \PDO::ATTR_PERSISTENT => true
+        ]);
     }
     return $dbh;
 }
@@ -160,12 +170,13 @@ function insertPath($objectId, $a, $b, $numstep) {
  * @param type $a
  * @param type $b
  * @param type $numstep
- * @return array
+ * @param array $ignorePath ['pathId', ...]
+ * @return array [pathId, objId, tagIdA, tagIdB, numstep, weight]
  */
-function getPath($objectId, $a, $b, $numstep) {
+function getPath($objectId, $a, $b, $numstep, $ignorePath = []) {
     $db = getDb();
     
-    $sth = $db->prepare("SELECT * FROM myl_path WHERE objId=? AND tagIdA=? AND tagIdB =? AND numstep =?");
+    $sth = $db->prepare("SELECT * FROM myl_path WHERE objId=? AND tagIdA=? AND tagIdB =? AND numstep =? LIMIT 1");
     $sth->execute([$objectId, $a, $b, $numstep]);
     $data = $sth->fetch();
     if(isset($data['pathId'])) {
@@ -175,14 +186,15 @@ function getPath($objectId, $a, $b, $numstep) {
 }
 
 /**
+ * Получаем самый популярный вариант
  * 
- * @param type $a
- * @param type $b
- * @param type $numstep
- * @return type
+ * @param int $a
+ * @param int $b
+ * @param int $numstep
+ * @return array [pathId, objId, tagIdA, tagIdB, numstep, weight]
  */
-function getPathX($a, $b, $numstep) {
-     $db = getDb();
+function getPathMax($a, $b, $numstep) {
+    $db = getDb();
     
     $sth = $db->prepare("SELECT * FROM myl_path WHERE tagIdA=? AND tagIdB =? AND numstep =? ORDER BY weight DESC ");
     $sth->execute([$a, $b, $numstep]);
@@ -191,6 +203,22 @@ function getPathX($a, $b, $numstep) {
         return $data;
     }
     return null;   
+}
+
+
+/**
+ * 
+ * @param int $a
+ * @param int $b
+ * @param int $numstep
+ * @return array [ [pathId, objId, tagIdA, tagIdB, numstep, weight], ... ]
+ */
+function getPathsMax($a, $b, $numstep) {
+    $db = getDb();
+    
+    $sth = $db->prepare("SELECT * FROM myl_path WHERE tagIdA=? AND tagIdB =? AND numstep =? ORDER BY weight DESC ");
+    $sth->execute([$a, $b, $numstep]);
+    return $sth->fetchAll();    
 }
 
 

@@ -20,6 +20,7 @@ CREATE TABLE `myl_path` (
   `weight` int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`pathId`),
    KEY `myl_pathtagIdA` (`tagIdA`),
-   KEY `myl_pathtagIdB` (`tagIdB`)
+   KEY `myl_pathtagIdB` (`tagIdB`),
+   KEY `myl_weight` (`weight`)
   
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
