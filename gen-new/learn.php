@@ -1,11 +1,11 @@
 <?php
-
+exit();
 define('VIEW_DEBAG', !true); 
 
 require './lib.php';
 
-$dirFiles = './../test-new/circl/'; ////circl/';
-$objId = OBJ_ID_CIRCLE;
+$dirFiles = './../test-new/sq/'; ////circl/';
+$objId = OBJ_ID_SQ;
 
 $sacn = scandir($dirFiles); 
 foreach($sacn as $file) {

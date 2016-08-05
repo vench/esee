@@ -169,11 +169,10 @@ function insertPath($objectId, $a, $b, $numstep) {
  * @param type $objectId
  * @param type $a
  * @param type $b
- * @param type $numstep
- * @param array $ignorePath ['pathId', ...]
+ * @param type $numstep 
  * @return array [pathId, objId, tagIdA, tagIdB, numstep, weight]
  */
-function getPath($objectId, $a, $b, $numstep, $ignorePath = []) {
+function getPath($objectId, $a, $b, $numstep) {
     $db = getDb();
     
     $sth = $db->prepare("SELECT * FROM myl_path WHERE objId=? AND tagIdA=? AND tagIdB =? AND numstep =? LIMIT 1");
