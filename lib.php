@@ -394,12 +394,83 @@ class ImageWrier {
 class ImageHelper { 
 
 
-        public static function getChars(ImageReader $r, Symbol $s){
+    
+     public static function getChars(ImageReader $r, Symbol $s){
+          
+         $chars  = self::getChars2($r, $s);
+          return $chars;
+        
+         $testOne = function(Symbol $char1, Symbol $char2, $r){
+              
+             
+             if($char1->x2 != $char2->x1) {
+                 return false;
+             }
+             
+             $p1 = $char1->getPoints($r);
+             $p2 = $char2->getPoints($r);
+             
+             if(empty($p1) || empty($p2)) {
+                  return false;
+             }
+             
+             $x1 = $char1->x2;//get last x
+            if($char1->x2 == 100) {
+                ImageHelper::viewSymbol($char1, $r);
+                ImageHelper::viewSymbol($char2, $r); exit();
+            }
+             
+             $sum = 0;
+             foreach ($p1 as $y1 => $d1) {  
+                     if($d1[$x1] == 1 && isset($p2[$y1][$x1+1]) && $p2[$y1][$x1+1] == $d1[$x1]) {
+                         $sum ++;
+                     }  
+             }
+             
+             return $sum > 0;
+         }
+         ;
+         
+         foreach($chars as $k => $char) {
+              
+             $char->trim($r);
+               
+               if($char->x1 - $char->x2 == 0) { //echo $char->x2, ' ', $char->x1; echo PHP_EOL; 
+                  unset($chars[$k]);
+                  continue;
+              }
+         } 
+         
+         //return $chars;
+         $chars = array_values($chars);
+         $optimize = [];
+         for($n = 0; $n < count($chars); $n ++) {
+             
+              
+             
+              $last =  count($optimize) > 0 ? $optimize[count($optimize) -1] : null;
+             
+             if(!is_null($last) && $testOne($last,$chars[$n], $r)) {
+                // echo 'X: ', $chars[$n]->x2 , ' ', $chars[$n+1]->x1; echo PHP_EOL; exit();
+                  
+                $last->x2 = $chars[$n]->x2;
+                // $optimize[] = $chars[$n];
+                  
+         } else {//if($n == 0 || $chars[$n]->x1 < $optimize[count($optimize) -1]->x2) {
+                 $optimize[] = $chars[$n];
+             }
+             
+         }
+         return $optimize;
+     }
+    
+        public static function getChars2(ImageReader $r, Symbol $s){
                $chars = [];
                $hashPoints = $s->getPoints($r);
-               
-               $fCheck = function($x, $y)use(&$hashPoints){
-               
+               echo ">", $s->x1, PHP_EOL; 
+               $lastPoints = [];
+               $fCheck = function($x, $y)use(&$lastPoints){                  // var_dump($lastPoints);
+               /*
                         return (isset($hashPoints[$y][$x+1]) && $hashPoints[$y][$x+1] == 1) ||
                         (isset($hashPoints[$y+1][$x]) && $hashPoints[$y+1][$x] == 1) ||
                         (isset($hashPoints[$y+1][$x+1]) && $hashPoints[$y+1][$x+1] == 1) ||
@@ -407,31 +478,78 @@ class ImageHelper {
                         (isset($hashPoints[$y-1][$x+1]) && $hashPoints[$y-1][$x+1] == 1) ||
                         (isset($hashPoints[$y-1][$x]) && $hashPoints[$y-1][$x] == 1) ||
                         (isset($hashPoints[$y][$x-1]) && $hashPoints[$y][$x-1] == 1) ||
-                        (isset($hashPoints[$y-1][$x-1]) && $hashPoints[$y-1][$x-1]) == 1;
+                        (isset($hashPoints[$y-1][$x-1]) && $hashPoints[$y-1][$x-1] == 1) ;*/
+                   return (isset($lastPoints[$y][$x+1]) && $lastPoints[$y][$x+1] == 1) ||
+                        (isset($lastPoints[$y+1][$x]) && $lastPoints[$y+1][$x] == 1) ||
+                        (isset($lastPoints[$y+1][$x+1]) && $lastPoints[$y+1][$x+1] == 1) ||
+                        (isset($lastPoints[$y+1][$x-1]) && $lastPoints[$y+1][$x-1] == 1) ||
+                        (isset($lastPoints[$y-1][$x+1]) && $lastPoints[$y-1][$x+1] == 1) ||
+                        (isset($lastPoints[$y-1][$x]) && $lastPoints[$y-1][$x] == 1) ||
+                        (isset($lastPoints[$y][$x-1]) && $lastPoints[$y][$x-1] == 1) ||
+                        (isset($lastPoints[$y-1][$x-1]) && $lastPoints[$y-1][$x-1] == 1) ||
+                   
+                   (isset($lastPoints[$y-1][$x-2]) && $lastPoints[$y-1][$x-2] == 1)
+                   ||
+                   (isset($lastPoints[$y+1][$x-2]) && $lastPoints[$y+1][$x-2] == 1)
+                   ||
+                   (isset($lastPoints[$y][$x-2]) && $lastPoints[$y][$x-2] == 1)
+                   ||
+                   (isset($lastPoints[$y-2][$x-1]) && $lastPoints[$y-2][$x-1] == 1)
+                   ||
+                   (isset($lastPoints[$y+2][$x-1]) && $lastPoints[$y+2][$x-1] == 1) ;
                };
+               
                
                for($x = 0; $x < $s->x2 - $s->x1; $x++){
                         $count =0;
+                    
                     for($y = 0; $y < $s->y2 - $s->y1; $y++){
-                        $count += $hashPoints[$y+$s->y1][$x+$s->x1] == 1 && $fCheck($x+$s->x1, $y+$s->y1) ? 1 : 0;
+                        $value =  $hashPoints[$y+$s->y1][$x+$s->x1] == 1 && $fCheck($x+$s->x1, $y+$s->y1) ? 1 : 0;
+                        
+                        $count += $value;
                     }  
                     
-                    if($count <= ($s->y2 - $s->y1) * .07) {
+                    if($s->x1 == 89) {
+                      //  echo '>> ', $count , PHP_EOL;
+                    }
+                    //if($count <=  (($s->y2 - $s->y1) * .1)) {
+                    if($count <=  0) {
                         $cs = clone $s;
                         $cs->x1 = count($chars) ? $chars[count($chars)-1]->x2 : $s->x1;
                         $cs->x2 = $x+$s->x1;
                         
-                        if($cs->x2 - $cs->x1 >  3) {
+                        if($cs->x2 - $cs->x1 > 1) {
                                 $chars[] = $cs;
+                                  
                         }
                         
                     }   
+                    
+                    $lastPoints = [];
+                    for($y = 0; $y < $s->y2 - $s->y1; $y++){
+                        if(isset($lastPoints[$y+$s->y1][$x+$s->x1-1])) {
+                            $lastPoints[$y+$s->y1][$x+$s->x1-1] = $hashPoints[$y+$s->y1][$x+$s->x1-1];
+                        }    
+                        $lastPoints[$y+$s->y1][$x+$s->x1] = $hashPoints[$y+$s->y1][$x+$s->x1];
+                    }
+                     
+                    
+                    
+                    
                }
               // exit();
                
                return $chars; 
         }
         
+        /**
+         * 
+         * @param ImageReader $r
+         * @param Symbol $s
+         * @return \Symbol
+         * @deprecated since version number
+         * @todo remove
+         */
         public static function getChars1(ImageReader $r, Symbol $s){
                 $chars = [];
                 $hashPoints = $s->getPoints($r);
@@ -461,6 +579,7 @@ class ImageHelper {
                 };
              //   var_dump($hashPoints);
                 $xx = [];
+                
                 foreach($hashPoints as $y => $line){
                         foreach($line as $x => $v) {
                                 if(!is_null($c = $chain($x, $y)) && !isset($xx[$c->maxX])) {
@@ -493,7 +612,8 @@ class ImageHelper {
         * @return boolean
         */
         public static function isWhite(ImageReader $r,$x,$y){
-                return $r->colorAtRed($x,$y) > 127 || $r->colorAtGreen($x,$y) > 127 || $r->colorAtBlue($x,$y) > 127;
+                $limit = 200; 
+                return $r->colorAtRed($x,$y) > $limit || $r->colorAtGreen($x,$y) > $limit || $r->colorAtBlue($x,$y) > $limit;
         }
 
         /**

@@ -9,22 +9,14 @@ if(empty($dataStr)) {
     throw new \Exception("Empty file");
 }
 
-$list = explode(';', $dataStr);
-
+$list = explode(';', $dataStr); 
 $lib = LibChars::getInstance();
 
 foreach($list as $item) {
     list($str, $title) = explode('^', $item);
     
-    echo $str;
-    echo PHP_EOL;
-    echo $title;
-    echo PHP_EOL;
-    
-    
-    /////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////
+    echo $str, PHP_EOL, "Char: {$title}", PHP_EOL;
+     
 
     $w = 0; 
     $h = 0;
@@ -45,10 +37,8 @@ foreach($list as $item) {
 
     $w = count($weights) /  $h;
 
-    var_dump($h, $w);
-    //exit();
-   
-
+    echo "Width: {$w}; Height: {$w}", PHP_EOL;
+    
     $node = $lib->findByTitle($title, $w, $h);
     if(is_null($node)) {
             $node = new Node();
@@ -57,14 +47,8 @@ foreach($list as $item) {
             $node->learn = 1;
             $node->width = $w;
             $node->height = $h;
-    } else {
-           $node = Node::updateWeight($weights, $node);
-    }
+    }   
 
-
-    for($i = 0; $i < 1; $i ++) {
-            $node = Node::updateWeight($weights, $node);
-    }
-
+    $node = Node::updateWeight($weights, $node); 
     $lib->saveNode($node);
 } 
