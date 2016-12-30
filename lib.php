@@ -398,7 +398,11 @@ class ImageHelper {
      public static function getChars(ImageReader $r, Symbol $s){
           
          $chars  = self::getChars2($r, $s);
-          return $chars;
+         
+         
+         //todo
+         
+          return $chars; //array_filter($chars, function($c) { return $c->x1 != $c->x2; });
         
          $testOne = function(Symbol $char1, Symbol $char2, $r){
               
@@ -467,7 +471,7 @@ class ImageHelper {
         public static function getChars2(ImageReader $r, Symbol $s){
                $chars = [];
                $hashPoints = $s->getPoints($r);
-               echo ">", $s->x1, PHP_EOL; 
+              // echo ">", $s->x1, PHP_EOL; 
                $lastPoints = [];
                $fCheck = function($x, $y)use(&$lastPoints){                  // var_dump($lastPoints);
                /*

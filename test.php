@@ -38,9 +38,18 @@ foreach ($words as $n => $w) {
     $lineNum = $w->lineNum;
 
     foreach ($chars as $char) {
-if($step -- == 0) exit();
+        
+        if($step -- == 0) exit();
         $char->trim($r);
+        
+        //TODO
+        if($char->x1 == $char->x2) {
+            continue;
+        }
+        
+
         $find = $lib->find($char, $r);
+        
         if (empty($find)) {
             echo "=========", "\n";
             echo "{$char->x1}; {$char->x2}+\n";
